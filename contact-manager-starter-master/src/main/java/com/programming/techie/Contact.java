@@ -19,23 +19,25 @@ public class Contact {
         return lastName;
     }
 
+    public String getPhoneNumber() { return phoneNumber; }
+
     public void validateFirstName() {
         if (this.firstName.isBlank())
-            throw new RuntimeException("First Name Cannot be null or empty");
+            throw new RuntimeException("First name may not be null or empty");
     }
 
     public void validateLastName() {
         if (this.lastName.isBlank())
-            throw new RuntimeException("Last Name Cannot be null or empty");
+            throw new RuntimeException("Last name may not be null or empty");
     }
 
     public void validatePhoneNumber() {
         if (this.phoneNumber.isBlank()) {
-            throw new RuntimeException("Phone Name Cannot be null or empty");
+            throw new RuntimeException("Phone number  may not be null or empty");
         }
 
-        if (this.phoneNumber.length() != 10) {
-            throw new RuntimeException("Phone Number Should be 10 Digits Long");
+        if (this.phoneNumber.length() != 8) {
+            throw new RuntimeException("Phone Number Should be 8 Digits Long");
         }
         if (!this.phoneNumber.matches("\\d+")) {
             throw new RuntimeException("Phone Number Contain only digits");

@@ -1,0 +1,145 @@
+
+/*add this dependency to the pom.xml*/
+<dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.7.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+
+/*add private field to declare ContactManager*/
+    private ContactManager contactManager;
+
+/*setup for all tests*/
+    @BeforeAll
+    public static void setupAll() {
+        System.out.println("Should Print Before All Tests");
+    }
+
+/*Intialize ContactManager*/
+    @BeforeEach
+    public void setup() {
+        System.out.println("Instantiating ContactManager");
+        contactManager = new ContactManager();
+    }
+
+/*Test to see if a contact is created*/
+	@Test
+    @DisplayName("Should Create Contact")
+    public void shouldCreateContact() {
+        contactManager.addContact("John", "Doe", "0123456789");
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
+        assertTrue(contactManager.getAllContacts().stream()
+                .filter(contact -> contact.getFirstName().equals("Jack") &&
+                        contact.getLastName().equals("Benny") &&
+                        contact.getPhoneNumber().equals("01234567"))
+                .findAny()
+                .isPresent());
+    }
+
+/*Test if RuntimeException is working*/
+    @Test
+    @DisplayName("Should Not Create Contact When First Name is Null")
+    public void shouldThrowRuntimeExceptionWhenFirstNameIsNull() {
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            contactManager.addContact(null, "Doe", "0123456789");
+        });
+    }
+
+    @Test
+    @DisplayName("Should Not Create Contact When Last Name is Null")
+    public void shouldThrowRuntimeExceptionWhenLastNameIsNull() {
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            contactManager.addContact("John", null, "01234567");
+        });
+    }
+
+    @Test
+    @DisplayName("Should Not Create Contact When Phone Number is Null")
+    public void shouldThrowRuntimeExceptionWhenPhoneNumberIsNull() {
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            contactManager.addContact("John", "Doe", null);
+        });
+    }
+
+/*Test OS*/
+    @Test
+    @DisplayName("Should create contact on MAC")
+    @EnabledOnOs(value = OS.MAC, disabledReason = "Should Run only on MAC")
+    public void shouldCreateContactOnMAC() {
+        contactManager.addContact("John", "Doe", "01234567");
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
+    }
+
+    @Test
+    @DisplayName("Should not create contact on WINDOWS")
+    @DisabledOnOs(value = OS.WINDOWS, disabledReason = "Disabled on WINDOWS OS")
+    public void shouldNotCreateContactOnWindows() {
+        contactManager.addContact("John", "Doe", "01234567");
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
+    }
+
+/*Testing assumptions*/
+    @Test
+    @DisplayName("Test Contact Creation on Developer Machine")
+    public void shouldTestContactCreationOnDEV() {
+        Assumptions.assumeTrue("DEV".equals(System.getProperty("ENV")));
+        contactManager.addContact("John", "Doe", "01234567");
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
+    }
+
+/*Test validation that phone no starts with 0*/
+    @Test
+    @DisplayName("Phone Number should start with 0")
+    public void shouldTestPhoneNumberFormat() {
+        contactManager.addContact("John", "Doe", "01234567");
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
+    }
+
+/*Run test 5 times*/
+    @Nested
+    class RepeatedTests {
+        @DisplayName("Repeat Contact Creation Test 5 Times")
+        @RepeatedTest(value = 5,
+                name = "Repeating Contact Creation Test {currentRepetition} of {totalRepetitions}")
+        public void shouldTestContactCreationRepeatedly() {
+            contactManager.addContact("John", "Doe", "01234567");
+            assertFalse(contactManager.getAllContacts().isEmpty());
+            assertEquals(1, contactManager.getAllContacts().size());
+        }
+    }
+
+/*Test phone no format*/
+    @DisplayName("Method Source Case - Phone Number should match the required Format")
+    @ParameterizedTest
+    @MethodSource("phoneNumberList")
+    public void shouldTestPhoneNumberFormatUsingMethodSource(String phoneNumber) {
+        contactManager.addContact("John", "Doe", phoneNumber);
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
+    }
+
+/*Return phone no list*/
+    private static List<String> phoneNumberList() {
+        return Arrays.asList("01234567", "01234568", "01234897");
+    }
+
+/*Tear down tests*/
+    @AfterEach
+    public void tearDown() {
+        System.out.println("Should Execute After Each Test");
+    }
+
+/*Tear down all tests*/
+    @AfterAll
+    public static void tearDownAll() {
+        System.out.println("Should be executed at the end of the Test");
+    }
